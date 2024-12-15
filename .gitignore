@@ -1,0 +1,18 @@
+# Allow .gitignore to be tracked
+!.gitignore
+
+# Ignore Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Ignore virtual environments
+venv/
+
+# Ignore Qdrant data
+qdrant-data/
+
+# Ignore logs
+*.log

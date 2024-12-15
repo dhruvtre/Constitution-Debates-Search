@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search the Constitutional Assembly Debates of India</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        #searchResults {
+            width: 75%;
+            min-height: 150px;
+            margin-top: 10px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #searchButton {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Search the Constitutional Assembly Debates of India</h2>
+    <input type="text" id="userQuery" placeholder="Enter your query here" size=75%>
+    <span>
+    <button id="searchButton">Search</button>
+    <button id="rerankButton">Rerank</button>
+    </span>
+    <div id="searchResults" placeholder="Results will appear here"></div>
+
+    <script>
+        let globalsearchresults = [];
+        document.getElementById("searchButton").addEventListener("click", function() {
+            const userQuery = document.getElementById("userQuery").value;
+            
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `query_text=${encodeURIComponent(userQuery)}`
+            })
+            .then(response => response.json()) // First, parse the response as JSON.
+            .then(data => {
+                const searchResultsDiv = document.getElementById('searchResults');
+                searchResultsDiv.innerHTML = ''; // Clear the container before appending new results.
+
+                globalsearchresults = data.results;
+
+                // Assuming 'data.results' is your array of paragraphs/texts.
+                data.results.forEach(resultText => {
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = resultText; // Assign text content to the paragraph.
+                    searchResultsDiv.appendChild(paragraph); // Append the paragraph to the div.
+                });
+            })
+            .catch(error => console.error('Error:', error)); // Catch and log any errors.
+        });
+        document.getElementById("rerankButton").addEventListener("click", function() {
+    const userQuery = document.getElementById("userQuery").value;
+    // Assuming you have a way to get documents to rerank, e.g., from a previous search result
+    const documents = globalsearchresults; // Example documents array
+
+    fetch('/rerank', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Updated to indicate JSON content
+        },
+        // Properly format the body as JSON
+        body: JSON.stringify({
+            query_text: userQuery,
+            documents: documents // Include the documents array
+        })
+    })
+    .then(response => response.json()) // First, parse the response as JSON.
+    .then(data => {
+        console.log(data); // Log the response data or process it as needed
+        
+        // Example: Update the UI with reranked results
+        // Assuming you have a div with id="searchResults" where you want to show the results
+        let resultsDiv = document.getElementById('searchResults');
+        resultsDiv.innerHTML = ''; // Clear previous results
+        data.reranked_results_list.forEach((result, index) => {
+            let paragraph = document.createElement('p');
+            paragraph.textContent = `Rank ${index + 1}: ${result.text} (Relevance Score: ${result.relevance_score})`;
+            resultsDiv.appendChild(paragraph);
+        });
+    })
+    .catch(error => console.error('Error:', error));
+    });
+    </script>
+</body>
+</html>
