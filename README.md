@@ -21,6 +21,10 @@ I sourced the Constituent Assembly Debates from [constitutionofindia.net](https:
      - View the search results.
      - Rerank results with a single click.
 
+
+https://github.com/user-attachments/assets/6f048503-67da-4e94-9cb9-e77a294bc8af
+
+
 ---
 
 ## **Why I Built This**
